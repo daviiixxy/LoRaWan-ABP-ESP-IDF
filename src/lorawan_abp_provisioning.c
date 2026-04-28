@@ -35,13 +35,25 @@ static uint8_t global_appskey[16] = {0};
 
 static bool have_keys = false;
 
+
+// --- LMIC core linker callbacks (Required by LMIC even in ABP mode) ---
 void lorawan_abp_provisioning_init(void)
 {
 }
 
-bool lorawan_abp_provisioning_have_keys(void)
+void os_getArtEui(u1_t *buf)
 {
-    return have_keys;
+    memset(buf, 0, 8);
+}
+
+void os_getDevEui(u1_t *buf)
+{
+    memset(buf, 0, 8);
+}
+
+void os_getDevKey(u1_t *buf)
+{
+    memset(buf, 0, 16);
 }
 
 uint32_t lorawan_abp_get_devaddr(void)
@@ -55,6 +67,31 @@ const uint8_t *lorawan_abp_get_nwkskey(void)
 const uint8_t *lorawan_abp_get_appskey(void)
 {
     return global_appskey;
+}
+
+int hex_tuple_to_byte(const char *hex)
+{
+    int n1 = hex_digit_to_val(hex[0]);
+    int n2 = hex_digit_to_val(hex[1]);
+    if (n1 < 0 || n2 < 0)
+        return -1;
+    return (n1 << 4) | n2;
+}
+
+int hex_digit_to_val(char ch)
+{
+    if (ch >= '0' && ch <= '9')
+        return ch - '0';
+    if (ch >= 'A' && ch <= 'F')
+        return ch + 10 - 'A';
+    if (ch >= 'a' && ch <= 'f')
+        return ch + 10 - 'a';
+    return -1;
+}
+
+bool lorawan_abp_provisioning_have_keys(void)
+{
+    return have_keys;
 }
 
 bool lorawan_abp_provisioning_decode_keys(const char *devaddr_str, const char *nwkskey_str, const char *appskey_str)
@@ -173,41 +210,4 @@ bool hex_str_to_bin(const char *hex, uint8_t *buf, int len)
         ptr += 2;
     }
     return true;
-}
-
-int hex_tuple_to_byte(const char *hex)
-{
-    int n1 = hex_digit_to_val(hex[0]);
-    int n2 = hex_digit_to_val(hex[1]);
-    if (n1 < 0 || n2 < 0)
-        return -1;
-    return (n1 << 4) | n2;
-}
-
-int hex_digit_to_val(char ch)
-{
-    if (ch >= '0' && ch <= '9')
-        return ch - '0';
-    if (ch >= 'A' && ch <= 'F')
-        return ch + 10 - 'A';
-    if (ch >= 'a' && ch <= 'f')
-        return ch + 10 - 'a';
-    return -1;
-}
-
-// --- LMIC core linker callbacks (Required by LMIC even in ABP mode) ---
-
-void os_getArtEui(u1_t *buf)
-{
-    memset(buf, 0, 8);
-}
-
-void os_getDevEui(u1_t *buf)
-{
-    memset(buf, 0, 8);
-}
-
-void os_getDevKey(u1_t *buf)
-{
-    memset(buf, 0, 16);
 }
