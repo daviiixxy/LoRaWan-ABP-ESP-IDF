@@ -1,0 +1,4 @@
+build/
+sdkconfig
+sdkconfig.old
+dev_keys.txt
