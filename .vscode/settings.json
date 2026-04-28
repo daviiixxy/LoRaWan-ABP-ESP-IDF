@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "sdkconfig.h": "c",
+        "oslmic.h": "c",
+        "hal_esp32.h": "c",
+        "esp_log.h": "c",
+        "lmic.h": "c",
+        "lorawan_abp_provisioning.h": "c",
+        "lorabase.h": "c"
+    }
+}
